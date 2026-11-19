@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<title>BeeMarket Stock Monitor — дашборд стока, оборачиваемости и маржи</title>
+<meta name="description" content="Аналитика товарного запаса BeeMarket: покрытие, dead stock, излишки и дефицит по матрице, брендам и филиалам, продажи и валовая маржа. Выгрузки ERP обрабатываются прямо в браузере.">
+<meta name="robots" content="index, follow">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111214" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://abdukhamidsaidov.github.io/beemarket-stock-monitor/">
+
+<!-- Open Graph / Telegram / соцсети -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="BeeMarket Stock Monitor">
+<meta property="og:title" content="BeeMarket Stock Monitor — дашборд стока и маржи">
+<meta property="og:description" content="Покрытие, dead stock, излишки, дефицит и маржа по SKU, брендам и филиалам. Данные из ERP считаются прямо в браузере.">
+<meta property="og:url" content="https://abdukhamidsaidov.github.io/beemarket-stock-monitor/">
+<meta property="og:image" content="https://abdukhamidsaidov.github.io/beemarket-stock-monitor/assets/img/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BeeMarket Stock Monitor — дашборд товарного запаса">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BeeMarket Stock Monitor — дашборд стока и маржи">
+<meta name="twitter:description" content="Покрытие, dead stock, излишки, дефицит и маржа по SKU, брендам и филиалам.">
+<meta name="twitter:image" content="https://abdukhamidsaidov.github.io/beemarket-stock-monitor/assets/img/og-image.png">
+
+<!-- Иконки -->
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+
+<!-- Шрифты -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=Unbounded:wght@500;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+
+<link rel="stylesheet" href="assets/css/styles.css?v=1.0.0">
+<link rel="preload" href="assets/vendor/chart.umd.min.js" as="script">
+
+<script src="assets/vendor/chart.umd.min.js" defer></script>
+<script src="assets/js/core.js?v=1.0.0" defer></script>
+<script src="assets/js/ui.js?v=1.0.0" defer></script>
+<script src="assets/js/app.js?v=1.0.0" defer></script>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"BeeMarket Stock Monitor","url":"https://abdukhamidsaidov.github.io/beemarket-stock-monitor/","applicationCategory":"BusinessApplication","operatingSystem":"Any","inLanguage":"ru","description":"Дашборд товарного запаса: покрытие, dead stock, излишки, дефицит, продажи и маржа по выгрузкам ERP."}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Перейти к содержимому</a>
+
+<header class="top"><div class="wrap topin">
+  <div class="brand"><span class="dot" aria-hidden="true"></span><h1>BeeMarket Stock Monitor</h1></div>
+  <span class="stamp" id="stamp" aria-live="polite">Загрузка…</span>
+  <nav class="tabs" role="tablist" id="tabs" aria-label="Разделы дашборда">
+    <button type="button" role="tab" id="t-overview" aria-controls="v-overview" data-v="overview" aria-selected="true">Обзор</button>
+    <button type="button" role="tab" id="t-aging" aria-controls="v-aging" data-v="aging" aria-selected="false">Залежавшиеся</button>
+    <button type="button" role="tab" id="t-matrix" aria-controls="v-matrix" data-v="matrix" aria-selected="false">Матрица и бренды</button>
+    <button type="button" role="tab" id="t-coverage" aria-controls="v-coverage" data-v="coverage" aria-selected="false">Покрытие</button>
+    <button type="button" role="tab" id="t-branches" aria-controls="v-branches" data-v="branches" aria-selected="false">Филиалы</button>
+    <button type="button" role="tab" id="t-sales" aria-controls="v-sales" data-v="sales" aria-selected="false">Продажи и маржа</button>
+    <button type="button" role="tab" id="t-actions" aria-controls="v-actions" data-v="actions" aria-selected="false">Действия</button>
+    <button type="button" role="tab" id="t-settings" aria-controls="v-settings" data-v="settings" aria-selected="false">Данные и настройки</button>
+  </nav>
+</div></header>
+
+<main class="wrap" id="main">
+  <noscript><div class="msg err">Для работы дашборда нужен включённый JavaScript.</div></noscript>
+
+  <div class="filters" id="filters">
+    <label>Категория <select id="fCat"><option value="">Все</option></select></label>
+    <label>Бренд <select id="fBrand"><option value="">Все</option></select></label>
+    <label>Склад <select id="fChan"><option value="">Онлайн + офлайн</option><option value="Online">Только онлайн</option><option value="Offline">Только офлайн</option></select></label>
+    <span class="small muted" id="filterNote"></span>
+  </div>
+
+  <section class="view on" id="v-overview" role="tabpanel" aria-labelledby="t-overview">
+    <div class="grid kpis" id="kpiMain"></div>
+    <h2>Что требует внимания</h2>
+    <div class="insights" id="insights"></div>
+    <div class="grid two mt12">
+      <div class="card"><h3>Структура стока по статусам</h3><p class="note">Сток по себестоимости, млн сум</p><div class="chartbox"><canvas id="chStatus" role="img" aria-label="Сток по статусам"></canvas></div></div>
+      <div class="card"><h3>Покрытие по матрице vs норматив</h3><p class="note">Месяцев продаж на складе; линия — норматив</p><div class="chartbox"><canvas id="chMatrixCov" role="img" aria-label="Покрытие по матрице"></canvas></div></div>
+    </div>
+    <div class="grid two mt12">
+      <div class="card"><h3>Динамика: сток и покрытие</h3><p class="note">Каждая загрузка добавляет точку в историю</p><div class="chartbox"><canvas id="chTrend" role="img" aria-label="Динамика стока и покрытия"></canvas></div></div>
+      <div class="card"><h3>Сток по брендам</h3><p class="note">Нормальный сток и сверх норматива, млн сум</p><div class="chartbox"><canvas id="chBrands" role="img" aria-label="Сток по брендам"></canvas></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-aging" role="tabpanel" aria-labelledby="t-aging">
+    <div class="grid kpis" id="kpiAging"></div>
+    <h2>Товары без продаж за период <small id="agingNote"></small></h2>
+    <div class="toolbar"><input type="search" id="agingSearch" placeholder="Поиск по названию или ESS ID" aria-label="Поиск по залежавшимся товарам"><div class="chips" id="agingChips"></div></div>
+    <div class="tablebox" id="agingTable"></div>
+    <h2>Dead stock по категориям</h2>
+    <div class="card"><div class="chartbox"><canvas id="chDeadCat" role="img" aria-label="Dead stock по категориям"></canvas></div></div>
+  </section>
+
+  <section class="view" id="v-matrix" role="tabpanel" aria-labelledby="t-matrix">
+    <h2>По статусу матрицы</h2><div class="tablebox" id="matrixTable"></div>
+    <h2>По ключевым брендам</h2><div class="tablebox" id="brandTable"></div>
+    <h2>Покрытие, мес: бренд × матрица <small>зелёный ≤ норматива, красный — многократно выше</small></h2><div class="tablebox heat" id="heatTable"></div>
+    <h2>Сток, млн сум: бренд × матрица <small>чем насыщеннее ячейка, тем больше денег; в подсказке — доля от общего стока</small></h2><div class="tablebox heat" id="heatStock"></div>
+    <h2>По категориям</h2><div class="tablebox" id="catTable"></div>
+  </section>
+
+  <section class="view" id="v-coverage" role="tabpanel" aria-labelledby="t-coverage">
+    <div class="grid kpis" id="kpiCov"></div>
+    <div class="grid two mt12">
+      <div class="card"><h3>Распределение стока по покрытию</h3><p class="note">Сколько денег лежит в товарах с каждым запасом, млн сум</p><div class="chartbox"><canvas id="chCovHist" role="img" aria-label="Распределение стока по покрытию"></canvas></div></div>
+      <div class="card"><h3>ABC по выручке × статус</h3><p class="note">Сток, млн сум. A — 80% выручки, B — следующие 15%, C — остальное</p><div class="chartbox"><canvas id="chAbc" role="img" aria-label="ABC-анализ по статусам"></canvas></div></div>
+    </div>
+    <h2>Все SKU</h2>
+    <div class="toolbar"><input type="search" id="skuSearch" placeholder="Поиск по названию или ESS ID" aria-label="Поиск SKU"><div class="chips" id="skuChips"></div></div>
+    <div class="tablebox" id="skuTable"></div>
+  </section>
+
+  <section class="view" id="v-branches" role="tabpanel" aria-labelledby="t-branches">
+    <div class="grid two">
+      <div class="card"><h3>Покрытие по филиалам</h3><p class="note">Сток ÷ месячная себестоимость продаж филиала. Топ-20 по стоку</p><div class="chartbox tall"><canvas id="chBranchCov" role="img" aria-label="Покрытие по филиалам"></canvas></div></div>
+      <div class="card"><h3>Доля dead stock по филиалам</h3><p class="note">Топ-20 по сумме неликвида, млн сум</p><div class="chartbox tall"><canvas id="chBranchDead" role="img" aria-label="Dead stock по филиалам"></canvas></div></div>
+    </div>
+    <h2>Все склады и филиалы</h2><div class="tablebox" id="branchTable"></div>
+  </section>
+
+  <section class="view" id="v-sales" role="tabpanel" aria-labelledby="t-sales">
+    <div class="grid kpis" id="kpiSales"></div>
+    <div class="grid two mt12">
+      <div class="card"><h3>Выручка и маржа по дням</h3><p class="note">млн сум; линия — маржа, %</p><div class="chartbox"><canvas id="chDays" role="img" aria-label="Выручка и маржа по дням"></canvas></div></div>
+      <div class="card"><h3>Маржа по способу оплаты</h3><p class="note">Выручка, млн сум, и валовая маржа, %</p><div class="chartbox"><canvas id="chPay" role="img" aria-label="Маржа по способу оплаты"></canvas></div></div>
+    </div>
+    <h2>Разрезы продаж</h2>
+    <div class="grid two">
+      <div class="tablebox" id="tChannel"></div><div class="tablebox" id="tSource"></div>
+      <div class="tablebox" id="tPay"></div><div class="tablebox" id="tPtype"></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-actions" role="tabpanel" aria-labelledby="t-actions">
+    <p class="small muted">Топ-25 позиций по каждому решению. Таблицы сортируются по клику на заголовок.</p>
+    <h2>1. Неликвид: уценка, промо, возврат поставщику</h2><div class="tablebox" id="actDead"></div>
+    <h2>2. Излишек: стоп закупа и перемещение</h2><div class="tablebox" id="actExcess"></div>
+    <h2>3. Дефицит и OOS: дозаказ</h2><div class="tablebox" id="actNeed"></div>
+    <h2>4. Продано ниже себестоимости</h2><div class="tablebox" id="actLoss"></div>
+    <h2>5. Один SKU по разной себестоимости</h2><div class="tablebox" id="actPpv"></div>
+  </section>
+
+  <section class="view" id="v-settings" role="tabpanel" aria-labelledby="t-settings">
+    <h2>Загрузить выгрузки из ERP</h2>
+    <p class="privacy">Файлы обрабатываются прямо в вашем браузере и никуда не отправляются — у сайта нет сервера. В памяти этого браузера сохраняется только сводный снимок по SKU, складам и дням, без телефонов клиентов, IMEI и ссылок на чеки.</p>
+    <div class="grid two" id="drops">
+      <div class="drop" id="dropStock"><b>Отчёт об остатках на складах</b><span class="small muted">products-stock-report-….xlsx — перетащите сюда или выберите файл</span><input type="file" id="fileStock" accept=".xlsx,.xls,.csv" class="sr-only"><label for="fileStock" class="btn ghost pick">Выбрать файл</label><span class="fname" id="fnStock"></span></div>
+      <div class="drop" id="dropSales"><b>Отчёт по продажам</b><span class="small muted">report-export-….xlsx, с колонкой «Разница»</span><input type="file" id="fileSales" accept=".xlsx,.xls,.csv" class="sr-only"><label for="fileSales" class="btn ghost pick">Выбрать файл</label><span class="fname" id="fnSales"></span></div>
+    </div>
+    <div class="toolbar mt12"><label class="small muted" for="stockDate">Дата остатков</label><input type="date" id="stockDate"><button class="btn" id="btnApply" type="button" disabled>Обновить дашборд</button><span class="small muted" id="applyNote"></span></div>
+    <div id="uploadMsg" role="status"></div>
+
+    <h2>Снимок данных</h2>
+    <p class="small muted">Снимок — сводные данные в одном .json-файле. Передайте его коллеге по внутренним каналам: он откроет файл здесь и увидит тот же дашборд. Подходит и файл <code>snapshot.json</code> из артефакта Claude.</p>
+    <div class="toolbar">
+      <button class="btn ghost" id="btnExport" type="button" disabled>Скачать снимок (.json)</button>
+      <input type="file" id="fileSnap" accept=".json,application/json" class="sr-only"><label class="btn ghost" for="fileSnap">Открыть снимок (.json)</label>
+      <button class="btn ghost" id="btnDemo" type="button">Показать демо-данные</button>
+      <button class="btn danger" id="btnClear" type="button">Удалить данные из браузера</button>
+    </div>
+
+    <h2>Параметры расчёта</h2>
+    <div class="grid params" id="paramsBox"></div>
+    <div class="toolbar mt12"><button class="btn ghost" id="btnSaveParams" type="button">Сохранить параметры</button><button class="btn ghost" id="btnResetParams" type="button">Вернуть стандартные</button><span class="small muted" id="paramsNote"></span></div>
+    <h2>История загрузок</h2><div class="tablebox" id="histTable"></div>
+    <h2>Проверки данных</h2><div class="tablebox" id="qcTable"></div>
+  </section>
+</main>
+
+<footer class="foot"><div class="wrap">
+  <span>BeeMarket Stock Monitor · данные обрабатываются локально в браузере</span>
+  <span>v1.0.0</span>
+</div></footer>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "BeeMarket Stock Monitor",
+  "short_name": "BM Stock",
+  "description": "Дашборд стока, покрытия и маржи BeeMarket",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f5f1",
+  "theme_color": "#17181b",
+  "icons": [
+    { "src": "assets/img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
